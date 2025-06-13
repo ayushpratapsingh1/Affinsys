@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking API Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .endpoint { background: #f5f5f5; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        pre { background: #eee; padding: 10px; overflow-x: auto; }
+        button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        input, select { padding: 8px; margin-right: 10px; }
+        .note { background: #fffde7; border-left: 4px solid #ffd600; padding: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Banking API Tester</h1>
+    
+    <div class="note">
+        <strong>Important:</strong> This page must be accessed through <a href="http://localhost:3000">http://localhost:3000</a> 
+        and not opened directly from the file system.
+    </div>
+    
+    <div class="endpoint">
+        <h2>Register User</h2>
+        <div>
+            <input type="text" id="reg-username" placeholder="Username">
+            <input type="password" id="reg-password" placeholder="Password">
+            <button onclick="register()">Register</button>
+        </div>
+        <pre id="reg-result">Results will appear here</pre>
+    </div>
+    
+    <div class="endpoint">
+        <h2>Fund Account</h2>
+        <div>
+            <input type="text" id="fund-username" placeholder="Username">
+            <input type="password" id="fund-password" placeholder="Password">
+            <input type="number" id="fund-amount" placeholder="Amount">
+            <button onclick="fund()">Fund</button>
+        </div>
+        <pre id="fund-result">Results will appear here</pre>
+    </div>
+    
+    <div class="endpoint">
+        <h2>Check Balance</h2>
+        <div>
+            <input type="text" id="bal-username" placeholder="Username">
+            <input type="password" id="bal-password" placeholder="Password">
+            <select id="bal-currency">
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+            </select>
+            <button onclick="checkBalance()">Check Balance</button>
+        </div>
+        <pre id="bal-result">Results will appear here</pre>
+    </div>
+    
+    <script>
+        // Get the base URL of the current page
+        const baseUrl = window.location.origin;
+        
+        function register() {
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            
+            fetch(`${baseUrl}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('reg-result').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                document.getElementById('reg-result').textContent = err.message;
+            });
+        }
+        
+        function fund() {
+            const username = document.getElementById('fund-username').value;
+            const password = document.getElementById('fund-password').value;
+            const amount = Number(document.getElementById('fund-amount').value);
+            
+            fetch(`${baseUrl}/fund`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+                },
+                body: JSON.stringify({ amt: amount })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('fund-result').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                document.getElementById('fund-result').textContent = err.message;
+            });
+        }
+        
+        function checkBalance() {
+            const username = document.getElementById('bal-username').value;
+            const password = document.getElementById('bal-password').value;
+            const currency = document.getElementById('bal-currency').value;
+            
+            fetch(`${baseUrl}/bal?currency=${currency}`, {
+                method: 'GET',
+                headers: { 
+                    'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('bal-result').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                document.getElementById('bal-result').textContent = err.message;
+            });
+        }
+    </script>
+</body>
+</html>
