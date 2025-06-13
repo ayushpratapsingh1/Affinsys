@@ -30,8 +30,6 @@ app.use(errorHandler);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-//   console.log(`Access the API tester at: http://localhost:${PORT}`);
-//   console.log('IMPORTANT: Open the page through the server URL, not directly from the file system');
 });
 
 module.exports = app;
